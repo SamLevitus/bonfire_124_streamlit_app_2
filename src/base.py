@@ -5,7 +5,7 @@ from dotenv import load_dotenv
 import os
 from requests.auth import HTTPBasicAuth
 import numpy as np
-import plotly_express as px
+
 class Base:
     
     def __init__(self):
@@ -18,7 +18,7 @@ class Base:
     
     def get_data(self):
         endpoint = "https://developer.nps.gov/api/v1/parks?limit=500"
-        HEADERS = {"X-Api-Key":"s0AaBlbKi6Gm2uvZh37TUtIY7bHni34Ekjo3wyRa"}
+        HEADERS = {"X-Api-Key":"MaZ16lVPrACD0SRrDzdvkKxR8yoU2RGVXoig65Mf"}
         req = urllib.request.Request(endpoint,headers=HEADERS)
         response = urllib.request.urlopen(req)
         data = response.read()
@@ -26,7 +26,7 @@ class Base:
         json_data = json.loads(data.decode('utf-8'))
         parks = json_data['data']
         self.df = pd.DataFrame.from_dict(parks)
-
+        
     def clean_data(self):
         columns = ['fees','latLong','entrancePasses','directionsInfo','directionsUrl','addresses','weatherInfo','name','contacts']
         self.df.drop(columns=columns,axis=1,inplace=True)
@@ -73,8 +73,7 @@ class Base:
             for e in range(len(df[column][i])):
                 a_list.append(df[column][i][e][name])
             df[column][i] = a_list
-
-           
+    
 if __name__ == '__main__':
     c = Base()
-    c.df.to_csv('national_park_information.csv', index=False)
+    c.df.to_csv('src/data/national_park_information.csv', index=False)

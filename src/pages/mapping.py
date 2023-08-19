@@ -1,22 +1,12 @@
-from pathlib import Path
-import streamlit as st
-import sys
-import os
+def locator (col,val):
+    a_list=[]
+    for i in range(len(df[col])):
+        if len(df[col].iloc[i].split(','))>1:
+            if val in df[col].iloc[i].split(','):
+                a_list.append(i)
+        else:
+            if val == df[col].iloc[i]:
+                a_list.append(i)
+    return a_list
 
-# Grab the filepath:
-filepath = os.path.join(Path(__file__).parents[1])
-print(filepath)
-
-# Insert the filepath into the system:
-sys.path.insert(0, filepath)
-
-# Import the ToMongo Class now:
-from to_mongo import ToMongo
-
-# Instantiate the class:
-c = ToMongo()
-st.header('Activities Page')
-st.write('This page will show on a map any National Park you input. Spelling currently must be exact.')
-
-
-answer = st.text_input('Enter a National Park:', value = 'Arcadia National Park')
+df.iloc[locator('states','TX')]

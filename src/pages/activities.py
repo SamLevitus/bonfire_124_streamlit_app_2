@@ -1,23 +1,33 @@
-from pathlib import Path
 import streamlit as st
+from pathlib import Path
 import sys
 import os
+import pandas as pd
 
-# Grab the filepath:
 filepath = os.path.join(Path(__file__).parents[1])
-print(filepath)
+sys.path.insert(0,filepath)
 
-# Insert the filepath into the system:
-sys.path.insert(0, filepath)
-
-# Import the ToMongo Class now:
 from to_mongo import ToMongo
 
-# Instantiate the class:
-c = ToMongo()
-st.header('Activities Page')
-st.write('This page will search our database for any activities at a National Park you input. Spelling currently must be exact.')
+c=ToMongo()
+cursor=c.park_info.find()
 
+# list into a dataframe
+df =  pd.DataFrame(list(cursor))
 
-answer = st.text_input('Enter a National Park:', value = 'Arcadia National Park')
-st.write(list(c.park_info.find({'name': answer})))
+# Creating a unique list of activities to select from
+a_list = []
+for i in range(len(df['activities'])):
+    for act in df['activities'][i]:
+        a_list.append(act)
+a_list = list(set(a_list))
+
+selection = st.selectbox('Type out the activity you want to see which parks have:', options=a_list)
+if selection:
+    p_list = []
+    for i in range(len(df['activities'])):
+        for act in df['activities'][i]:
+            if act == selection:
+                p_list.append(df['full_name'][i])
+    p_list = list(set(p_list))
+    st.write(pd.DataFrame({"Park Names": p_list}))
