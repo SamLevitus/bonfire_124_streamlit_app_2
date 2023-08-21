@@ -15,27 +15,26 @@ class ToMongo(Base):
     '''
     
     def __init__(self, user=os.getenv('USERNAME'), password=os.getenv('PASSWORD')):
-        # Initialize the instance of our inherited class:
-        Base.__init__(self)
-        # Load the env variables:
+        
         load_dotenv()
         self.user = user
         self.password = password
         self.mongo_url = os.getenv('MONGO_URL')
         #Connect to PyMongo
-        self.client = pymongo.MongoClient(self.mongo_url)
+        self.client = pymongo.MongoClient('mongodb+srv://backup_selevitus:Eli2018@cluster0.yjzndnb.mongodb.net/?retryWrites=true&w=majority')
         # Create a database
         self.db = self.client.db
         # Create a collection:
         self.park_info = self.db.park_info
-        # Set dataframe index to the id column:
-        self.df.set_index('id', inplace=True)
+        
         
     def upload_collection(self):
         self.park_info.insert_many([self.df.to_dict()])
 
     def upload_one_by_one(self):
-    
+        self.park_info.drop()
+        Base.__init__(self)
+        self.df.set_index('id', inplace=True)
         for i in self.df.index:
             self.park_info.insert_one(self.df.loc[i].to_dict())
         

@@ -65,15 +65,21 @@ class Base:
         self.df['standard_hours']=operating
         self.df['holiday']=holidays
         self.df.drop(columns='operating_hours', axis=1, inplace=True)
-    
+        
+        s_list=[]
+        for i in range(len(self.df['states'])):
+            if len(self.df['states'].iloc[i].split(','))>1:
+                s=self.df['states'].iloc[i].split(',')
+
+                s_list.append(list([j for j in s]))
+            else:
+                s_list.append(self.df['states'].loc[i].split(',')[0])
+        self.df['states'] = s_list
+
     @staticmethod
     def column_fix(df,column,name='name'):
-        for i in range(len(df[column])):
-            a_list = []
-            for e in range(len(df[column][i])):
-                a_list.append(df[column][i][e][name])
-            df[column][i] = a_list
+        df[column] = [
+            [df[column][i][e][name] for e in range(len(df[column][i]))]
+            for i in range(len(df[column]))
+            ]
     
-if __name__ == '__main__':
-    c = Base()
-    c.df.to_csv('src/data/national_park_information.csv', index=False)
